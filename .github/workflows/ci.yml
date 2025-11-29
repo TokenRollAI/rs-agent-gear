@@ -74,7 +74,8 @@ jobs:
         run: pip install dist/*.whl
 
       - name: Run Python tests
-        run: pytest tests/python -v
+        working-directory: tests/python
+        run: pytest -v
 
   # 类型检查 (仅检查核心代码)
   typecheck:
