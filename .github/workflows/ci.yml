@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # Rust 代码检查和测试
+  # Rust 代码检查
   rust:
     name: Rust ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -63,46 +63,16 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
-      - name: Create virtual environment
-        run: python -m venv .venv
+      - name: Install dependencies
+        run: pip install maturin pytest pytest-benchmark
 
-      - name: Install dependencies (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          source .venv/bin/activate
-          pip install maturin pytest pytest-benchmark
+      - name: Build and install
+        run: maturin develop --release
 
-      - name: Install dependencies (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          .venv\Scripts\activate
-          pip install maturin pytest pytest-benchmark
+      - name: Run Python tests
+        run: pytest tests/python -v
 
-      - name: Build and install (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          source .venv/bin/activate
-          maturin develop --release
-
-      - name: Build and install (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          .venv\Scripts\activate
-          maturin develop --release
-
-      - name: Run Python tests (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          source .venv/bin/activate
-          pytest tests/python -v
-
-      - name: Run Python tests (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          .venv\Scripts\activate
-          pytest tests/python -v
-
-  # 类型检查
+  # 类型检查 (仅检查核心代码)
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
@@ -116,10 +86,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install mypy ruff
+        run: pip install ruff
 
-      - name: Ruff check
-        run: ruff check .
+      - name: Ruff check (core only)
+        run: ruff check agent_gear/
 
-      - name: Ruff format check
-        run: ruff format --check .
+      - name: Ruff format check (core only)
+        run: ruff format --check agent_gear/

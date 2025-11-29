@@ -106,9 +106,7 @@ class FileSystem:
         """Read multiple files in parallel."""
         return self._inner.read_batch(paths)
 
-    def read_lines(
-        self, path: str, start_line: int = 0, count: int | None = None
-    ) -> list[str]:
+    def read_lines(self, path: str, start_line: int = 0, count: int | None = None) -> list[str]:
         """Read specific lines from a file (for large files).
 
         Efficiently reads a range of lines without loading the entire file.
@@ -202,7 +200,7 @@ class FileSystem:
         """Close the filesystem and release resources."""
         self._inner.close()
 
-    def __enter__(self) -> "FileSystem":
+    def __enter__(self) -> FileSystem:
         return self
 
     def __exit__(self, *args) -> None:
@@ -318,9 +316,7 @@ class AsyncFileSystem:
         """Replace text in file (async)."""
         import asyncio
 
-        return await asyncio.to_thread(
-            self._sync.edit_replace, path, old_text, new_text, strict
-        )
+        return await asyncio.to_thread(self._sync.edit_replace, path, old_text, new_text, strict)
 
     async def grep(
         self,
@@ -360,7 +356,7 @@ class AsyncFileSystem:
         """Close the filesystem and release resources."""
         self._sync.close()
 
-    async def __aenter__(self) -> "AsyncFileSystem":
+    async def __aenter__(self) -> AsyncFileSystem:
         return self
 
     async def __aexit__(self, *args) -> None:

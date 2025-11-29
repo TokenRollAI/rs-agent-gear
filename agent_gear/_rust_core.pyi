@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 __version__: str
 
 class FileMetadata:
@@ -75,7 +73,6 @@ class FileSystem:
             root: Root directory path.
             auto_watch: Whether to automatically watch for file changes.
         """
-        ...
 
     def list(self, pattern: str = "**/*", only_files: bool = True) -> list[str]:
         """List files matching the given pattern from memory index.
@@ -87,7 +84,6 @@ class FileSystem:
         Returns:
             List of file paths relative to root.
         """
-        ...
 
     def glob(self, pattern: str) -> list[str]:
         """Match files using glob pattern.
@@ -98,7 +94,6 @@ class FileSystem:
         Returns:
             List of matching file paths.
         """
-        ...
 
     def read_file(self, path: str, encoding: str = "utf-8") -> str:
         """Read a single file.
@@ -110,7 +105,6 @@ class FileSystem:
         Returns:
             File content as string.
         """
-        ...
 
     def read_batch(self, paths: list[str]) -> dict[str, str]:
         """Read multiple files in parallel.
@@ -121,13 +115,12 @@ class FileSystem:
         Returns:
             Dict mapping path to content.
         """
-        ...
 
     def read_lines(
         self,
         path: str,
         start_line: int = 0,
-        count: Optional[int] = None,
+        count: int | None = None,
     ) -> list[str]:
         """Read specific lines from a file (for large files).
 
@@ -139,7 +132,6 @@ class FileSystem:
         Returns:
             List of line strings (without trailing newlines).
         """
-        ...
 
     def read_file_range(
         self,
@@ -157,7 +149,6 @@ class FileSystem:
         Returns:
             Content as string.
         """
-        ...
 
     def write_file(self, path: str, content: str) -> bool:
         """Write content to file atomically.
@@ -169,7 +160,6 @@ class FileSystem:
         Returns:
             True if successful.
         """
-        ...
 
     def write_file_fast(self, path: str, content: str) -> bool:
         """Write content to file without atomicity guarantee (fast mode).
@@ -181,7 +171,6 @@ class FileSystem:
         Returns:
             True if successful.
         """
-        ...
 
     def edit_replace(
         self,
@@ -201,7 +190,6 @@ class FileSystem:
         Returns:
             True if replacement was made.
         """
-        ...
 
     def grep(
         self,
@@ -221,7 +209,6 @@ class FileSystem:
         Returns:
             List of SearchResult objects.
         """
-        ...
 
     def get_metadata(self, path: str) -> FileMetadata:
         """Get file metadata.
@@ -232,32 +219,26 @@ class FileSystem:
         Returns:
             FileMetadata object.
         """
-        ...
 
     def refresh(self) -> None:
         """Force refresh the file index."""
-        ...
 
     def is_ready(self) -> bool:
         """Check if the index is ready."""
-        ...
 
     def is_watching(self) -> bool:
         """Check if file watching is active."""
-        ...
 
     def pending_changes(self) -> int:
         """Get the number of pending file change events."""
-        ...
 
     def close(self) -> None:
         """Close the filesystem and release resources."""
-        ...
 
-    def __enter__(self) -> "FileSystem": ...
+    def __enter__(self) -> FileSystem: ...
     def __exit__(
         self,
-        exc_type: Optional[type],
-        exc_value: Optional[BaseException],
-        traceback: Optional[object],
+        exc_type: type | None,
+        exc_value: BaseException | None,
+        traceback: object | None,
     ) -> bool: ...
