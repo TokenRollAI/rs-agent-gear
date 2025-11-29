@@ -9,6 +9,9 @@ description = "High-performance filesystem operations for AI agents"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.12"
+authors = [
+    { name = "DJJ", email = "shauiqijianhao@qq.com" }
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -22,6 +25,11 @@ classifiers = [
     "Typing :: Typed",
 ]
 keywords = ["agent", "filesystem", "high-performance", "rust"]
+
+[project.urls]
+Homepage = "https://github.com/TokenRollAI/rs-agent-gear"
+Repository = "https://github.com/TokenRollAI/rs-agent-gear"
+Documentation = "https://github.com/TokenRollAI/rs-agent-gear#readme"
 
 [project.optional-dependencies]
 dev = [
