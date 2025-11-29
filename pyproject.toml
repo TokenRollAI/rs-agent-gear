@@ -47,7 +47,6 @@ strip = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
-pythonpath = ["."]
 
 [tool.mypy]
 python_version = "3.12"
