@@ -66,8 +66,12 @@ jobs:
       - name: Install dependencies
         run: pip install maturin pytest pytest-benchmark
 
-      - name: Build and install
-        run: maturin develop --release
+      - name: Build wheel
+        run: maturin build --release --out dist
+
+      - name: Install wheel
+        shell: bash
+        run: pip install dist/*.whl
 
       - name: Run Python tests
         run: pytest tests/python -v
