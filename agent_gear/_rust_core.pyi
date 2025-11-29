@@ -1,5 +1,7 @@
 """Type stubs for the Rust core module."""
 
+from __future__ import annotations
+
 from typing import Optional
 
 __version__: str

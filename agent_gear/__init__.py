@@ -22,6 +22,8 @@ Async Example:
     ...     results = await fs.grep("TODO", "**/*.py")
 """
 
+from __future__ import annotations
+
 from agent_gear._rust_core import (
     FileMetadata,
     SearchOptions,

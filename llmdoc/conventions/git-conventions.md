@@ -155,12 +155,29 @@ Closes #789
 
 ### 版本发布流程
 
+**自动化发布（推荐）：** 通过 GitHub Actions 自动构建和发布
+
 1. 更新 `Cargo.toml` 和 `pyproject.toml` 中的版本号
 2. 在 `CHANGELOG.md` 中记录变更
 3. 提交 commit：`chore(release): v0.1.0`
 4. 创建 Git tag：`git tag -a v0.1.0 -m "Release v0.1.0"`
 5. 推送 tag：`git push origin v0.1.0`
-6. CI/CD 自动构建并发布
+6. GitHub Actions 自动触发构建流程：
+   - `.github/workflows/ci.yml` - 运行所有平台的 CI 测试（需要通过）
+   - `.github/workflows/release.yml` - 在 tag 推送时自动触发
+   - 构建多平台 wheels：Linux (x86_64, aarch64)、macOS (x86_64, aarch64)、Windows (x86_64)
+   - 构建源码分发包 (sdist)
+   - 使用 PyPI Trusted Publisher (OIDC) 自动发布到 PyPI（无需手动输入凭证）
+
+**发布失败处理：**
+- 如果 CI 测试失败，发布流程会自动中止
+- 可以通过 GitHub Actions 界面查看详细的构建日志
+- 修复问题后重新推送 tag 即可重新触发发布
+
+**关键配置说明：**
+- 需要在 PyPI 项目设置中配置 Trusted Publisher（OIDC）
+- 确保 GitHub 仓库权限正确配置（需要 `contents: read`、`id-token: write`）
+- 详细说明见 `guides/ci-cd.md`
 
 ### 当前版本
 
