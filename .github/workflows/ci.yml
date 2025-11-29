@@ -36,8 +36,8 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Run tests
-        run: cargo test --all-features
+      # Note: cargo test is skipped for PyO3 extension modules
+      # Tests require Python linkage and are run via pytest in the Python job
 
   # Python 测试（需要构建扩展）
   python:
