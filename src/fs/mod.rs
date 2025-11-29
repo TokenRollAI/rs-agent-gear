@@ -33,6 +33,7 @@ pub struct FileSystem {
     index: Arc<FileIndex>,
     searcher: Searcher,
     watcher: Option<Arc<FileWatcher>>,
+    #[allow(dead_code)]
     watcher_thread: Option<std::thread::JoinHandle<()>>,
     stop_flag: Arc<AtomicBool>,
 }

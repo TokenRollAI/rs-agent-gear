@@ -1,7 +1,6 @@
 //! Benchmarks for agent-gear filesystem operations
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::path::PathBuf;
 use tempfile::tempdir;
 
 fn create_test_files(dir: &std::path::Path, count: usize) {

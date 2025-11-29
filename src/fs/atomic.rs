@@ -44,10 +44,10 @@ pub fn atomic_write(path: &Path, content: &[u8]) -> Result<()> {
 
     // Atomically rename to target path
     temp_file.persist(path).map_err(|e| {
-        AgentGearError::Io(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!("Failed to persist file: {}", e),
-        ))
+        AgentGearError::Io(std::io::Error::other(format!(
+            "Failed to persist file: {}",
+            e
+        )))
     })?;
 
     Ok(())

@@ -302,26 +302,24 @@ impl FileIndex {
                         .collect()
                 }
             }
+        } else if match_all {
+            self.entries
+                .iter()
+                .map(|entry| self.relative_path_fast(entry.key()))
+                .collect()
         } else {
-            if match_all {
-                self.entries
-                    .iter()
-                    .map(|entry| self.relative_path_fast(entry.key()))
-                    .collect()
-            } else {
-                let matcher = self.compile_glob(pattern)?;
-                self.entries
-                    .iter()
-                    .filter_map(|entry| {
-                        let relative = self.relative_path_fast(entry.key());
-                        if matcher.is_match(&relative) {
-                            Some(relative)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect()
-            }
+            let matcher = self.compile_glob(pattern)?;
+            self.entries
+                .iter()
+                .filter_map(|entry| {
+                    let relative = self.relative_path_fast(entry.key());
+                    if matcher.is_match(&relative) {
+                        Some(relative)
+                    } else {
+                        None
+                    }
+                })
+                .collect()
         };
 
         Ok(results)
@@ -428,6 +426,7 @@ impl FileIndex {
     }
 
     /// Get the relative path from the root
+    #[allow(dead_code)]
     fn relative_path(&self, path: &Path) -> String {
         self.relative_path_fast(path)
     }
@@ -609,7 +608,7 @@ mod tests {
         index.build().unwrap();
 
         assert!(index.is_ready());
-        assert!(index.len() > 0);
+        assert!(!index.is_empty());
     }
 
     #[test]
