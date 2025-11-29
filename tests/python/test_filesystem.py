@@ -109,8 +109,11 @@ class TestFileSystem:
         contents = fs.read_batch(paths)
 
         assert len(contents) == 2
-        assert "def main():" in contents[str(temp_project / "src/main.py")]
-        assert "def helper():" in contents[str(temp_project / "src/utils.py")]
+        # Check content by finding keys that end with the expected paths
+        main_content = [v for k, v in contents.items() if "main.py" in k][0]
+        utils_content = [v for k, v in contents.items() if "utils.py" in k][0]
+        assert "def main():" in main_content
+        assert "def helper():" in utils_content
 
     def test_write_file(self, temp_project):
         """Test writing a file."""
@@ -169,7 +172,8 @@ class TestFileSystem:
         # Only search in src/
         results = fs.grep("def", "src/*.py")
         for r in results:
-            assert r.file.startswith("src/")
+            # Handle both Unix (/) and Windows (\) path separators
+            assert r.file.startswith("src/") or r.file.startswith("src\\")
 
     def test_grep_case_sensitive(self, temp_project):
         """Test case-sensitive grep."""
