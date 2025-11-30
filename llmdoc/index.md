@@ -14,6 +14,7 @@
 - 原子文件写入 - 三步式（临时文件 → fsync → rename）
 - 实时文件监听 - 自动增量索引更新
 - 跨平台支持 - Linux (inotify) / macOS (FSEvents) / Windows (ReadDirectoryChangesW)
+- 外部路径支持 - 访问 root 目录外的文件和目录（Python 后端）
 
 **当前版本：** v0.1.0 (Alpha)
 
@@ -108,6 +109,20 @@
   - 错误处理、Python 异常映射
   - **长度：** 140 行 | **难度：** 中级 | **用途：** 模块接口速查
 
+### 📚 Reference（参考文档）
+
+事实型的 API 参考和概念查询表。
+
+- **[PythonFileBackend API 参考](./reference/python-backend.md)**
+  - 核心摘要、初始化参数
+  - 文件读取 API (read_file, read_lines, read_file_range)
+  - 文件写入 API (write_file, write_file_fast, edit_replace)
+  - 列表和模式匹配 API (list_files, glob)
+  - 内容搜索 API (grep)
+  - 文件元数据 API (get_metadata)
+  - 设计实现细节、与 Rust 实现的兼容性
+  - **长度：** 450 行 | **难度：** 中级 | **用途：** PythonFileBackend 完整参考
+
 ---
 
 ### ✨ Features（功能文档）
@@ -177,6 +192,14 @@
   - PyPI Trusted Publisher (OIDC) 配置说明
   - 故障排查和最佳实践
   - **长度：** 480 行 | **难度：** 中级 | **用途：** CI/CD 工作流完全指南
+
+- **[外部路径支持指南](./guides/external-paths.md)**
+  - 启用和禁用外部路径支持
+  - 读取外部文件（单个、按行、按字节范围）
+  - 批量读取混合路径、列出和搜索外部目录
+  - 写入和编辑外部文件、性能考虑和优化
+  - 错误处理、异步支持、常见用例、故障排查
+  - **长度：** 480 行 | **难度：** 中级 | **用途：** 外部路径完全指南
 
 ---
 
@@ -267,6 +290,10 @@ Agent-Gear (主系统)
 │       ├── 使用: guides/safe-file-operations.md
 │       └── 模块: modules/fs-mod.md (io.rs)
 │
+│   └── 高级: PythonFileBackend (外部路径)
+│       ├── 使用: guides/external-paths.md
+│       └── 参考: reference/python-backend.md
+│
 ├── 项目概览
 │   ├── overview/project-overview.md
 │   └── architecture/overview.md
@@ -275,7 +302,8 @@ Agent-Gear (主系统)
     ├── conventions/coding-conventions.md
     ├── conventions/git-conventions.md
     ├── guides/development.md
-    └── guides/ci-cd.md (CI/CD 自动化流程)
+    ├── guides/ci-cd.md (CI/CD 自动化流程)
+    └── guides/external-paths.md (外部路径支持)
 ```
 
 ---
@@ -295,6 +323,8 @@ Agent-Gear (主系统)
 | **DashMap** | 无锁并发 HashMap，支持多个读者无阻塞并发访问 | [file-index.md](./architecture/file-index.md#2-核心数据结构) |
 | **Rayon** | Rust 数据并行库，用于并行迭代、过滤、搜索等操作 | [searcher.md](./architecture/searcher.md#34-单文件搜索) |
 | **mmap** | 内存映射文件，用于大文件搜索以减少内存复制 | [searcher.md](./architecture/searcher.md#34-单文件搜索) |
+| **PythonFileBackend** | 纯 Python 文件系统后端，用于处理 root 目录外的文件 | [python-backend.md](./reference/python-backend.md) |
+| **外部路径** | 初始化 root 目录之外的文件和目录（需 `allow_external=True`） | [external-paths.md](./guides/external-paths.md) |
 
 ---
 
@@ -370,6 +400,12 @@ Agent-Gear (主系统)
 - ✅ 字节范围读取 (`read_file_range`) - 支持读取文件指定字节范围
 - ✅ Python 异步支持 (AsyncFileSystem) - 使用 asyncio.to_thread() 包装同步方法
 - ✅ 上下文行 - grep 支持 context_lines 参数
+
+#### Phase 4: 外部路径支持 ✅ 完成
+- ✅ 外部路径支持 (`allow_external` 参数) - 访问 root 目录外的文件
+- ✅ PythonFileBackend - 纯 Python 实现的后端，用于超界路径
+- ✅ 路径判断逻辑 - 相对/内部路径用 Rust，外部路径用 Python
+- ✅ 混合读取 - `read_batch()` 支持混合内/外路径
 
 ---
 
@@ -447,7 +483,7 @@ python benchmarks/benchmark_repeated.py
 
 ## 文档维护
 
-本索引文档最后更新于：**2025-11-30** (CI/CD 文档更新完成)
+本索引文档最后更新于：**2025-11-30** (外部路径支持文档完成)
 
 文档系统采用以下目录结构：
 
@@ -472,7 +508,10 @@ llmdoc/
 │   ├── safe-file-operations.md
 │   ├── using-file-index.md
 │   ├── file-watching.md
-│   └── ci-cd.md          # CI/CD 流程指南（新增）
+│   ├── ci-cd.md
+│   └── external-paths.md # 外部路径支持指南（新增）
+├── reference/            # 参考文档
+│   └── python-backend.md # PythonFileBackend API（新增）
 └── conventions/          # 开发规范
     ├── coding-conventions.md
     └── git-conventions.md
@@ -534,6 +573,12 @@ async def async_example():
         results = await fs.grep("TODO", "**/*.py")
 
 asyncio.run(async_example())
+
+# 外部路径支持（Phase 4 新增）
+fs = FileSystem("/project", allow_external=True)
+external_content = fs.read_file("/tmp/external.txt")
+external_files = fs.list("/tmp/**/*.py")
+results = fs.grep("TODO", "/var/log/**/*.log")
 ```
 
 ### 关键概念速查
@@ -546,6 +591,7 @@ asyncio.run(async_example())
 - **按行读取**：`read_lines(path, start_line, count)` - 大文件优化读取，>1MB 使用 mmap
 - **字节范围**：`read_file_range(path, offset, limit)` - 读取指定字节范围
 - **异步 API**：`AsyncFileSystem` - asyncio.to_thread() 包装，支持 async/await
+- **外部路径**：`FileSystem(..., allow_external=True)` - 访问 root 外的文件和目录（Python 后端）
 
 ---
 

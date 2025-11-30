@@ -1,6 +1,6 @@
 [package]
 name = "agent-gear"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 rust-version = "1.75"
 description = "High-performance filesystem operations for AI agents"
